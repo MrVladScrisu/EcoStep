@@ -59,6 +59,9 @@ dependencies {
     // ------- View model (nou) ----------
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
+    // ----- Navigation (nou) --------
+    implementation(libs.androidx.navigation.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

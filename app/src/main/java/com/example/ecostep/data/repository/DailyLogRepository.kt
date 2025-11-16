@@ -8,7 +8,7 @@ interface DailyLogRepository {
     // READ toate log-urile, ca Flow pentru a putea fi observate în UI
     fun getAllLogs(): Flow<List<DailyLog>>
 
-    // READ după id (pentru ecranul de detaliu/edit)
+    // READ dupa id (pentru ecranul de detaliu/edit)
     suspend fun getLogById(id: Long): DailyLog?
 
     // CREATE / UPDATE (upsert = insert sau replace)
