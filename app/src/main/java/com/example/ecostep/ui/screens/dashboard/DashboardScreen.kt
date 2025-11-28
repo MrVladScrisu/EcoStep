@@ -42,7 +42,6 @@ fun DashboardScreen(
             }
         }
 
-        // 🔹 aici afișăm numărul total de zile salvate în DB
         Text(
             text = "Total days logged: $totalLogs",
             modifier = Modifier.padding(top = 16.dp),
