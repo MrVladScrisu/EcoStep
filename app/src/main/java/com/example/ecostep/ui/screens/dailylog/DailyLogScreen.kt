@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import com.example.ecostep.ai.FoodDetectionService
 import com.example.ecostep.data.local.DailyLog
 import com.example.ecostep.ui.viewmodel.DailyLogFormData
@@ -85,6 +88,12 @@ fun DailyLogScreen(
     var stepsText by remember { 
         mutableStateOf(existingLog?.steps?.toString() ?: "") 
     }
+    
+    // Data log-ului (default = azi, sau data existingLog)
+    var selectedDate by remember {
+        mutableStateOf(existingLog?.date ?: java.time.LocalDate.now().toString())
+    }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     var transportPhoto by remember { mutableStateOf<Uri?>(null) }
     var foodPhoto by remember { mutableStateOf<Uri?>(null) }
@@ -231,7 +240,7 @@ fun DailyLogScreen(
             .padding(20.dp)
     ) {
         Text(
-            text = if (existingLog != null) "Editează log-ul zilnic" else "Completează log-ul zilnic",
+            text = if (existingLog != null) "Editează log-ul zilnic" else "Adaugă log zilnic",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
@@ -241,8 +250,60 @@ fun DailyLogScreen(
             text = "Înregistrează-ți activitățile pentru a calcula impactul ecologic",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(bottom = 16.dp)
         )
+        
+        // Selector de dată
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "Data",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                    )
+                    Text(
+                        text = formatDateReadable(selectedDate),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+                FilledTonalIconButton(
+                    onClick = { showDatePicker = true }
+                ) {
+                    Icon(
+                        Icons.Default.DateRange,
+                        contentDescription = "Schimbă data"
+                    )
+                }
+            }
+        }
+        
+        // Dialog pentru selectare dată
+        if (showDatePicker) {
+            DatePickerDialog(
+                selectedDate = selectedDate,
+                onDateSelected = { newDate ->
+                    selectedDate = newDate
+                    showDatePicker = false
+                },
+                onDismiss = { showDatePicker = false }
+            )
+        }
 
         // ------- TRANSPORT -------
         SectionCard(
@@ -545,6 +606,73 @@ fun DailyLogScreen(
             title = "Mișcare",
             icon = Icons.Default.Star
         ) {
+            // Afișăm pașii detectați automat
+            if (stepCounterService.hasStepPermission() && stepCounterService.hasStepCounter()) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Star,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "Pași detectați automat",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = "$trackedSteps pași",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            if (trackedDistance > 0) {
+                                Text(
+                                    text = "~${"%.2f".format(trackedDistance)} km",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                                )
+                            }
+                        }
+                    }
+                }
+                
+                // Buton pentru a folosi pașii detectați
+                OutlinedButton(
+                    onClick = { 
+                        stepsText = trackedSteps.toString()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.Check, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Folosește pașii detectați")
+                }
+                
+                Spacer(Modifier.height(12.dp))
+                
+                Text(
+                    text = "sau introdu manual:",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+            
             OutlinedTextField(
                 value = stepsText,
                 onValueChange = { newVal ->
@@ -560,7 +688,16 @@ fun DailyLogScreen(
                     Icon(Icons.Default.Star, contentDescription = null)
                 },
                 supportingText = {
-                    Text("Introdu numărul de pași făcuți astăzi")
+                    if (!stepCounterService.hasStepPermission()) {
+                        Text(
+                            "💡 Acordă permisiunea ACTIVITY_RECOGNITION pentru detectare automată",
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    } else if (!stepCounterService.hasStepCounter()) {
+                        Text("Dispozitivul nu are senzor de pași")
+                    } else {
+                        Text("Introdu numărul de pași făcuți astăzi")
+                    }
                 }
             )
         }
@@ -570,6 +707,7 @@ fun DailyLogScreen(
         Button(
             onClick = {
                 val form = DailyLogFormData(
+                    date = selectedDate,
                     transportType = selectedTransport.value,
                     transportDistanceKm = distanceKm.toDouble(),
                     meatPortions = meatPortions.toInt(),
@@ -607,6 +745,95 @@ fun DailyLogScreen(
         
         Spacer(modifier = Modifier.height(16.dp))
     }
+}
+
+private fun formatDateReadable(dateString: String): String {
+    return try {
+        val date = LocalDate.parse(dateString)
+        val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", java.util.Locale("ro"))
+        date.format(formatter)
+    } catch (e: Exception) {
+        dateString
+    }
+}
+
+@Composable
+private fun DatePickerDialog(
+    selectedDate: String,
+    onDateSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var year by remember { mutableStateOf(LocalDate.parse(selectedDate).year) }
+    var month by remember { mutableStateOf(LocalDate.parse(selectedDate).monthValue) }
+    var day by remember { mutableStateOf(LocalDate.parse(selectedDate).dayOfMonth) }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Selectează data") },
+        text = {
+            Column {
+                // An
+                OutlinedTextField(
+                    value = year.toString(),
+                    onValueChange = { 
+                        it.toIntOrNull()?.let { newYear -> 
+                            if (newYear in 2020..2030) year = newYear 
+                        }
+                    },
+                    label = { Text("An") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
+                
+                // Lună
+                OutlinedTextField(
+                    value = month.toString(),
+                    onValueChange = { 
+                        it.toIntOrNull()?.let { newMonth -> 
+                            if (newMonth in 1..12) month = newMonth 
+                        }
+                    },
+                    label = { Text("Lună (1-12)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
+                
+                // Zi
+                OutlinedTextField(
+                    value = day.toString(),
+                    onValueChange = { 
+                        it.toIntOrNull()?.let { newDay -> 
+                            if (newDay in 1..31) day = newDay 
+                        }
+                    },
+                    label = { Text("Zi (1-31)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    try {
+                        val newDate = LocalDate.of(year, month, day)
+                        onDateSelected(newDate.toString())
+                    } catch (e: Exception) {
+                        // Data invalidă, nu facem nimic
+                    }
+                }
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Anulează")
+            }
+        }
+    )
 }
 
 @Composable

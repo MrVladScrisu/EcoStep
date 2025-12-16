@@ -15,6 +15,7 @@ import java.time.LocalDate
 
 // asta este forma datelor care vin din UI (DailyLogScreen)
 data class DailyLogFormData(
+    val date: String = LocalDate.now().toString(), // Data log-ului
     val transportType: String,
     val transportDistanceKm: Double,
 
@@ -64,13 +65,14 @@ class DailyLogViewModel(
     fun saveDailyLog(form: DailyLogFormData) {
         viewModelScope.launch {
             val userId = _currentUserId.value ?: return@launch
-            val date = LocalDate.now().toString()
+            val date = form.date
             val existingLog = repository.getDailyLogByDate(userId, date)
             val ecoScore = calculateEcoScore(form)
 
             val log = if (existingLog != null) {
                 // Update existing log
                 existingLog.copy(
+                    date = date,
                     transportType = form.transportType,
                     transportDistanceKm = form.transportDistanceKm,
                     meatPortions = form.meatPortions,

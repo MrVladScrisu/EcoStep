@@ -336,7 +336,7 @@ private fun ImpactCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "Impact total",
                     style = MaterialTheme.typography.titleMedium,
@@ -350,12 +350,20 @@ private fun ImpactCard(
                     color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
                 )
             }
-            Text(
-                text = String.format("%.1f", totalCO2),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.tertiary
-            )
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = String.format("%.1f", totalCO2),
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+                Text(
+                    text = "kg CO₂",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
+                )
+            }
         }
     }
 }

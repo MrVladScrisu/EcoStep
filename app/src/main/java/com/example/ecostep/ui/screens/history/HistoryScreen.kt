@@ -342,19 +342,29 @@ private fun LogItemCard(
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-                    Row {
-                        IconButton(onClick = { onEditLog(log) }) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        FilledTonalIconButton(
+                            onClick = { onEditLog(log) },
+                            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.Star,
+                                imageVector = Icons.Default.Edit,
                                 contentDescription = "Editează",
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         }
-                        IconButton(onClick = onDelete) {
+                        FilledTonalIconButton(
+                            onClick = onDelete,
+                            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer
+                            )
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Șterge",
-                                tint = MaterialTheme.colorScheme.error
+                                tint = MaterialTheme.colorScheme.onErrorContainer
                             )
                         }
                     }
@@ -362,58 +372,103 @@ private fun LogItemCard(
             
             Spacer(modifier = Modifier.height(12.dp))
             
-            Divider()
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             
             Spacer(modifier = Modifier.height(12.dp))
             
-            Row(
+            // Detalii log
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                InfoItem(
-                    label = "Transport",
-                    value = "${log.transportType} (${String.format("%.1f", log.transportDistanceKm)} km)",
-                    icon = Icons.Default.Star
-                )
-                InfoItem(
-                    label = "Pași",
-                    value = log.steps.toString(),
-                    icon = Icons.Default.Star
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    DetailChip(
+                        icon = Icons.Default.Star,
+                        label = "Transport",
+                        value = "${getTransportLabel(log.transportType)} • ${String.format("%.1f", log.transportDistanceKm)} km"
+                    )
+                    DetailChip(
+                        icon = Icons.Default.Star,
+                        label = "Pași",
+                        value = "${log.steps}"
+                    )
+                }
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    DetailChip(
+                        icon = Icons.Default.Star,
+                        label = "Alimentație",
+                        value = "${log.meatPortions + log.veggiesPortions + log.dairyPortions + log.junkFoodPortions} porții"
+                    )
+                    DetailChip(
+                        icon = if (log.recycledToday) Icons.Default.CheckCircle else Icons.Default.Close,
+                        label = "Reciclare",
+                        value = if (log.recycledToday) "Da" else "Nu",
+                        color = if (log.recycledToday) 
+                            MaterialTheme.colorScheme.tertiary 
+                        else 
+                            MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun InfoItem(
+private fun DetailChip(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     value: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
+    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 4.dp)
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        modifier = Modifier.padding(4.dp)
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(16.dp),
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Column {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = color
             )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
+    }
+}
+
+private fun getTransportLabel(type: String): String {
+    return when (type) {
+        "walk" -> "Mers"
+        "bike" -> "Bicicletă"
+        "bus" -> "Autobuz"
+        "car" -> "Mașină"
+        "ev" -> "Mașină electrică"
+        else -> type
     }
 }
 
