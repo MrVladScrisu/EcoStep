@@ -1,0 +1,45 @@
+═══════════════════════════════════════════════════════════════
+  GHID RAPID - CONFIGURARE FIREBASE PENTRU ECOSTEP
+═══════════════════════════════════════════════════════════════
+
+📌 PAȘI RAPIZI (5 minute):
+
+1. DESCHIDE: https://console.firebase.google.com/
+2. LOGIN cu Gmail
+3. CLICK: "Add project" → Nume: "EcoStep" → Continue
+4. CLICK: Iconița Android → Package: "com.example.ecostep"
+5. DOWNLOAD: google-services.json
+6. COPIAZĂ: google-services.json în folderul app/ din Android Studio
+7. FIREBASE CONSOLE → Firestore → "Create database" → Test mode
+8. FIREBASE CONSOLE → Authentication → "Get started" → Activează "Anonymous"
+9. ANDROID STUDIO → Sync Project (iconița cu elefant)
+10. GATA! ✅
+
+═══════════════════════════════════════════════════════════════
+
+📁 UNDE E FIȘIERUL google-services.json?
+
+Structura corectă:
+EcoStep/
+  app/
+    google-services.json  ← AICI!
+    build.gradle.kts
+    src/
+
+═══════════════════════════════════════════════════════════════
+
+❓ PROBLEME?
+
+- "google-services.json not found" 
+  → Verifică că e în app/, nu în app/src/
+
+- "Plugin not found"
+  → Verifică build.gradle.kts (root) - ar trebui să fie deja adăugat
+
+- "Permission denied"
+  → Verifică că Firestore e în "test mode"
+
+═══════════════════════════════════════════════════════════════
+
+Pentru instrucțiuni detaliate, vezi: FIREBASE_SETUP_DETALIAT.md
+

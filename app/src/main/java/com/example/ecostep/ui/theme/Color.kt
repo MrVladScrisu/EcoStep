@@ -2,10 +2,17 @@ package com.example.ecostep.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Eco-friendly green color palette
+val EcoGreen80 = Color(0xFFA5D6A7)
+val EcoGreenGrey80 = Color(0xFFB2DFDB)
+val EcoTeal80 = Color(0xFF80CBC4)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val EcoGreen40 = Color(0xFF2E7D32)
+val EcoGreenGrey40 = Color(0xFF00695C)
+val EcoTeal40 = Color(0xFF00897B)
+
+// Additional eco colors
+val EcoLightGreen = Color(0xFFC8E6C9)
+val EcoDarkGreen = Color(0xFF1B5E20)
+val EcoAccent = Color(0xFF4CAF50)
+val EcoSecondary = Color(0xFF66BB6A)

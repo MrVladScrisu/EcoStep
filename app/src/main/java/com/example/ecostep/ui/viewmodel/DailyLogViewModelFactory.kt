@@ -8,9 +8,9 @@ class DailyLogViewModelFactory(
     private val repository: DailyLogRepository
 ) : ViewModelProvider.Factory {
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DailyLogViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
             return DailyLogViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

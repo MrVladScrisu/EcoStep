@@ -19,3 +19,22 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Firebase
+-keepattributes *Annotation*
+-keepattributes Signature
+-keepattributes Exceptions
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.firebase.**
+-dontwarn com.google.android.gms.**
+
+# ML Kit
+-keep class com.google.mlkit.** { *; }
+-keep class com.google.android.gms.common.** { *; }
+-dontwarn com.google.mlkit.**
+
+# Keep data models
+-keep class com.example.ecostep.data.model.** { *; }
+-keep class com.example.ecostep.data.local.** { *; }
+-keep class com.example.ecostep.data.remote.** { *; }

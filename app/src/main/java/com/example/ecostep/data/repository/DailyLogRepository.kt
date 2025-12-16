@@ -5,15 +5,15 @@ import kotlinx.coroutines.flow.Flow
 
 interface DailyLogRepository {
 
-    // READ toate log-urile, ca Flow pentru a putea fi observate în UI
-    fun getAllLogs(): Flow<List<DailyLog>>
+    suspend fun insertDailyLog(log: DailyLog)
 
-    // READ dupa id (pentru ecranul de detaliu/edit)
-    suspend fun getLogById(id: Long): DailyLog?
+    suspend fun updateDailyLog(log: DailyLog)
 
-    // CREATE / UPDATE (upsert = insert sau replace)
-    suspend fun upsertLog(log: DailyLog)
+    suspend fun getDailyLogByDate(userId: String, date: String): DailyLog?
 
-    // DELETE
-    suspend fun deleteLog(log: DailyLog)
+    suspend fun getDailyLogById(id: Long): DailyLog?
+
+    fun getDailyLogs(userId: String): Flow<List<DailyLog>>
+
+    suspend fun deleteDailyLog(log: DailyLog)
 }

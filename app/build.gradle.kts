@@ -2,6 +2,7 @@
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
     id("org.jetbrains.kotlin.kapt")
 }
 
@@ -61,6 +62,24 @@ dependencies {
 
     // ----- Navigation (nou) --------
     implementation(libs.androidx.navigation.compose)
+
+    // ----- Firebase --------
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+
+    // ----- ML Kit pentru AI --------
+    implementation(libs.mlkit.image.labeling)
+    implementation(libs.mlkit.barcode.scanning)
+
+    // ----- Biometric Authentication --------
+    implementation(libs.androidx.biometric)
+
+    // ----- Camera pentru poze (AI) --------
+    implementation("androidx.camera:camera-camera2:1.3.4")
+    implementation("androidx.camera:camera-lifecycle:1.3.4")
+    implementation("androidx.camera:camera-view:1.3.4")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

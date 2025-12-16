@@ -8,15 +8,39 @@ class DailyLogRepositoryImpl(
     private val dao: DailyLogDao
 ) : DailyLogRepository {
 
-    override fun getAllLogs(): Flow<List<DailyLog>> = dao.getAllLogs()
-
-    override suspend fun getLogById(id: Long): DailyLog? = dao.getLogById(id)
-
-    override suspend fun upsertLog(log: DailyLog) {
-        dao.insertLog(log)
+    override suspend fun insertDailyLog(log: DailyLog) {
+        dao.insertDailyLog(log)
     }
 
-    override suspend fun deleteLog(log: DailyLog) {
-        dao.deleteLog(log)
+    override suspend fun updateDailyLog(log: DailyLog) {
+        dao.updateDailyLog(
+            id = log.id,
+            transportType = log.transportType,
+            transportDistanceKm = log.transportDistanceKm,
+            meatPortions = log.meatPortions,
+            veggiesPortions = log.veggiesPortions,
+            dairyPortions = log.dairyPortions,
+            junkFoodPortions = log.junkFoodPortions,
+            electricityKwh = log.electricityKwh,
+            waterLiters = log.waterLiters,
+            wasteBags = log.wasteBags,
+            recycledToday = log.recycledToday,
+            steps = log.steps,
+            ecoScore = log.ecoScore
+        )
+    }
+
+    override suspend fun getDailyLogByDate(userId: String, date: String): DailyLog? {
+        return dao.getDailyLogByDate(userId, date)
+    }
+
+    override suspend fun getDailyLogById(id: Long): DailyLog? {
+        return dao.getDailyLogById(id)
+    }
+
+    override fun getDailyLogs(userId: String): Flow<List<DailyLog>> = dao.getDailyLogs(userId)
+
+    override suspend fun deleteDailyLog(log: DailyLog) {
+        dao.deleteDailyLog(log)
     }
 }
