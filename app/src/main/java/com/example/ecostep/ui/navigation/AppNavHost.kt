@@ -11,6 +11,9 @@ import com.example.ecostep.data.local.DailyLog
 import com.example.ecostep.ui.screens.dashboard.DashboardScreen
 import com.example.ecostep.ui.screens.dailylog.DailyLogScreen
 import com.example.ecostep.ui.screens.history.HistoryScreen
+import com.example.ecostep.ui.screens.profile.ProfileScreen
+import com.example.ecostep.ui.screens.settings.SettingsScreen
+import com.example.ecostep.ui.screens.goals.GoalsScreen
 import com.example.ecostep.ui.viewmodel.DailyLogFormData
 
 @Composable
@@ -20,6 +23,7 @@ fun AppNavHost(
     onSaveLog: (DailyLogFormData) -> Unit,
     onDeleteLog: (DailyLog) -> Unit,
     onLogout: () -> Unit,
+    onThemeChange: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -31,7 +35,31 @@ fun AppNavHost(
             DashboardScreen(
                 logs = logs,
                 onAddTodayClick = { navController.navigate("daily_log") },
+                onLogoutClick = onLogout,
+                onProfileClick = { navController.navigate("profile") },
+                onSettingsClick = { navController.navigate("settings") }
+            )
+        }
+        
+        composable("profile") {
+            ProfileScreen(
+                onBackClick = { navController.popBackStack() },
                 onLogoutClick = onLogout
+            )
+        }
+        
+        composable("settings") {
+            SettingsScreen(
+                logs = logs,
+                onBackClick = { navController.popBackStack() },
+                onThemeChange = onThemeChange
+            )
+        }
+        
+        composable("goals") {
+            GoalsScreen(
+                logs = logs,
+                onBackClick = { navController.popBackStack() }
             )
         }
 

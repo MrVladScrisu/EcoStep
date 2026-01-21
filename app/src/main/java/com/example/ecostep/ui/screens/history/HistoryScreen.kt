@@ -2,9 +2,9 @@ package com.example.ecostep.ui.screens.history
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -31,10 +31,13 @@ fun HistoryScreen(
     val bestDay = logs.minByOrNull { it.ecoScore }
     val worstDay = logs.maxByOrNull { it.ecoScore }
 
+    val scrollState = rememberScrollState()
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(scrollState)
             .padding(20.dp)
     ) {
         Text(
@@ -182,10 +185,10 @@ fun HistoryScreen(
                 }
             }
         } else {
-            LazyColumn(
+            Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(logs) { log ->
+                logs.forEach { log ->
                     LogItemCard(
                         log = log,
                         onDelete = { onDeleteLog(log) },
@@ -383,28 +386,31 @@ private fun LogItemCard(
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     DetailChip(
                         icon = Icons.Default.Star,
                         label = "Transport",
-                        value = "${getTransportLabel(log.transportType)} • ${String.format("%.1f", log.transportDistanceKm)} km"
+                        value = "${getTransportLabel(log.transportType)} • ${String.format("%.1f", log.transportDistanceKm)} km",
+                        modifier = Modifier.weight(1f)
                     )
                     DetailChip(
                         icon = Icons.Default.Star,
                         label = "Pași",
-                        value = "${log.steps}"
+                        value = "${log.steps}",
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     DetailChip(
                         icon = Icons.Default.Star,
                         label = "Alimentație",
-                        value = "${log.meatPortions + log.veggiesPortions + log.dairyPortions + log.junkFoodPortions} porții"
+                        value = "${log.meatPortions + log.veggiesPortions + log.dairyPortions + log.junkFoodPortions} porții",
+                        modifier = Modifier.weight(1f)
                     )
                     DetailChip(
                         icon = if (log.recycledToday) Icons.Default.CheckCircle else Icons.Default.Close,
@@ -413,7 +419,8 @@ private fun LogItemCard(
                         color = if (log.recycledToday) 
                             MaterialTheme.colorScheme.tertiary 
                         else 
-                            MaterialTheme.colorScheme.error
+                            MaterialTheme.colorScheme.error,
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }
@@ -426,12 +433,13 @@ private fun DetailChip(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     value: String,
-    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
+    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary,
+    modifier: Modifier = Modifier
 ) {
     Surface(
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        modifier = Modifier.padding(4.dp)
+        modifier = modifier.padding(4.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

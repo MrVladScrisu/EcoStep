@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.ecostep.data.AppGraph
@@ -22,10 +23,15 @@ import com.example.ecostep.ui.screens.auth.BiometricLoginScreen
 import com.example.ecostep.ui.screens.auth.EmailLoginScreen
 import com.example.ecostep.ui.viewmodel.DailyLogViewModel
 import com.example.ecostep.ui.viewmodel.DailyLogViewModelFactory
+import com.example.ecostep.util.PreferencesManager
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun EcoStepApp() {
+fun EcoStepApp(
+    isDarkTheme: Boolean = false,
+    onThemeChanged: (Boolean) -> Unit = {}
+) {
+    val context = LocalContext.current
     val auth = remember { FirebaseAuth.getInstance() }
     var isLoggedIn by remember { mutableStateOf(auth.currentUser != null) }
     var showEmailLogin by remember { mutableStateOf(false) }
@@ -61,14 +67,18 @@ fun EcoStepApp() {
                 onLogout = {
                     auth.signOut()
                     isLoggedIn = false
-                }
+                },
+                onThemeChange = onThemeChanged
             )
         }
     }
 }
 
 @Composable
-private fun MainApp(onLogout: () -> Unit) {
+private fun MainApp(
+    onLogout: () -> Unit,
+    onThemeChange: (Boolean) -> Unit
+) {
     val auth = remember { FirebaseAuth.getInstance() }
     val dailyLogViewModel: DailyLogViewModel = viewModel(
         factory = DailyLogViewModelFactory(AppGraph.dailyLogRepository)
@@ -97,6 +107,7 @@ private fun MainApp(onLogout: () -> Unit) {
                 dailyLogViewModel.deleteLog(log)
             },
             onLogout = onLogout,
+            onThemeChange = onThemeChange,
             modifier = Modifier.padding(innerPadding)
         )
     }

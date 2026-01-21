@@ -3,7 +3,7 @@ package com.example.ecostep
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.*
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.FragmentActivity
@@ -22,13 +22,19 @@ class MainActivity : FragmentActivity() {
         AppGraph.provide(applicationContext)
 
         setContent {
-            EcoStepTheme {
+            val context = applicationContext
+            var isDarkTheme by remember { mutableStateOf(com.example.ecostep.util.PreferencesManager.isDarkMode(context)) }
+            
+            EcoStepTheme(darkTheme = isDarkTheme) {
                 // Transmitem Activity-ul direct prin CompositionLocal
                 CompositionLocalProvider(
                     LocalContext provides this@MainActivity,
                     LocalFragmentActivity provides this@MainActivity
                 ) {
-                    EcoStepApp()
+                    EcoStepApp(
+                        isDarkTheme = isDarkTheme,
+                        onThemeChanged = { newTheme -> isDarkTheme = newTheme }
+                    )
                 }
             }
         }

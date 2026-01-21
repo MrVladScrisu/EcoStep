@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -41,6 +42,7 @@ private enum class TransportOption(val label: String, val value: String) {
     EV("EV", "ev")
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyLogScreen(
     existingLog: DailyLog? = null,
@@ -317,9 +319,10 @@ fun DailyLogScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             
-            Row(
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 TransportOption.values().forEach { option ->
                     FilterChip(

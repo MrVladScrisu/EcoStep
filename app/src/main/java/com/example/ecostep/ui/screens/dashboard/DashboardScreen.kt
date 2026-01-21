@@ -27,14 +27,15 @@ import java.time.format.DateTimeFormatter
 fun DashboardScreen(
     logs: List<DailyLog>,
     onAddTodayClick: () -> Unit = {},
-    onLogoutClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {}
 ) {
     val today = LocalDate.now().toString()
     val todayLog = logs.firstOrNull { it.date == today }
     val totalLogs = logs.size
     val avgEcoScore = if (totalLogs > 0) logs.sumOf { it.ecoScore } / totalLogs else 0.0
     val bestDay = logs.minByOrNull { it.ecoScore }
-    val totalCO2 = logs.sumOf { it.ecoScore }
 
     Column(
         modifier = Modifier
@@ -42,13 +43,27 @@ fun DashboardScreen(
             .background(MaterialTheme.colorScheme.background)
             .padding(20.dp)
     ) {
-        // Header with Logout
+        // Header with Profile, Title, and Settings
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            // Profile Icon (left)
+            IconButton(onClick = onProfileClick) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Profil",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+            
+            // Title (center)
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
                     text = "EcoStep",
                     style = MaterialTheme.typography.displaySmall,
@@ -61,11 +76,14 @@ fun DashboardScreen(
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
             }
-            IconButton(onClick = onLogoutClick) {
+            
+            // Settings Icon (right)
+            IconButton(onClick = onSettingsClick) {
                 Icon(
-                    imageVector = Icons.Default.ExitToApp,
-                    contentDescription = "Logout",
-                    tint = MaterialTheme.colorScheme.error
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Setări",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(28.dp)
                 )
             }
         }
@@ -114,12 +132,6 @@ fun DashboardScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // Total Impact Card
-        ImpactCard(
-            totalCO2 = totalCO2,
-            modifier = Modifier.fillMaxWidth()
-        )
-
         Spacer(modifier = Modifier.weight(1f))
 
         // Add Today Button
@@ -127,22 +139,17 @@ fun DashboardScreen(
             onClick = onAddTodayClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp),
+                .height(60.dp),
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
             )
         ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = if (todayLog != null) "Actualizează log-ul de azi" else "Completează log-ul de azi",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }
@@ -310,58 +317,6 @@ private fun BestDayCard(
                     text = "kg CO₂",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ImpactCard(
-    totalCO2: Double,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Impact total",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Toate zilele înregistrate",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
-                )
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    text = String.format("%.1f", totalCO2),
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
-                Text(
-                    text = "kg CO₂",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
                 )
             }
         }

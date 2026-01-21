@@ -25,6 +25,7 @@ fun EcoBottomBar(
     val items = listOf(
         BottomNavItem("dashboard", "Dashboard", Icons.Default.Home),
         BottomNavItem("daily_log", "Log", Icons.Default.Add),
+        BottomNavItem("goals", "Obiective", Icons.Default.Star),
         BottomNavItem("history", "Istoric", Icons.Default.Menu)
     )
 
